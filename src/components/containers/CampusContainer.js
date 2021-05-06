@@ -7,12 +7,15 @@ import { CampusView } from "../views";
 class CampusContainer extends Component {
   componentDidMount() {
     //getting campus ID from url
-    console.log("campus id:", this.props.match.params.id);
     this.props.fetchCampus(this.props.match.params.id);
   }
 
   render() {
-    return <CampusView campus={this.props.campus} />;
+    return (
+      <CampusView 
+        campus={this.props.campus}
+      />
+    );
   }
 }
 
@@ -23,6 +26,7 @@ const mapState = (state) => {
   };
 };
 
+// map dispatch to props
 const mapDispatch = (dispatch) => {
   return {
     fetchCampus: (id) => dispatch(fetchCampusThunk(id)),
