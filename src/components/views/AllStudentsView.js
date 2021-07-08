@@ -4,7 +4,14 @@ const AllStudentsView = (props) => {
   const {students, deleteStudent} = props;
 
   if (!students.length) {
-    return <div>There are no students.</div>;
+    return (
+    <div>
+      <p>There are no students.</p>
+      <Link to={`student/new`}>
+        <button>Add New Student</button>
+      </Link>
+    </div>
+    );
   }
   
   return (
@@ -21,6 +28,9 @@ const AllStudentsView = (props) => {
         );
       }
       )}
+      <Link to={`/newstudent`}>
+        <button>Add New Student</button>
+      </Link>
     </div>
   );
 };
