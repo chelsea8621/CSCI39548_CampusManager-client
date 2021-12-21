@@ -22,12 +22,12 @@ const campus = (state = initialState, action) => {
         case ADD_STUDENT:
             return {
                 ...state,
-                students: students(state.students, action.payload)
+                students: students(state.students, action)
             }
         case DELETE_STUDENT:
             return {
                 ...state,
-                students: students(state.students, action.payload)
+                students: students(state.students, action)
             }
         case EDIT_STUDENT:
             if (state.students.some(student => student.id === action.payload.id))

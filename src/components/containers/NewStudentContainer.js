@@ -1,54 +1,22 @@
-import {Component} from 'react';
 import {connect} from 'react-redux';
-import {Redirect} from 'react-router-dom';
-
-import NewStudentView from '../views/NewStudentView';
 import {addStudentThunk} from '../../store/thunks';
+import GenericCreationContainer from "./GenericCreationContainer";
+import {NewStudentView} from "../views";
 
-
-class NewStudentContainer extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            redirectId: null
-        };
-    }
-
-    handleChange = event => this.setState({
-        [event.target.name]: event.target.value
-    });
-
-    handleSubmit = async event => {
-        event.preventDefault();
-
-        const { redirectId: oldRedirectId, ...student } = this.state;
-
-        const { id: redirectId } = await this.props.addStudent(student);
-
-        this.setState({ redirectId });
-    }
-
-    componentWillUnmount() {
-        this.setState({  redirectId: null });
-    }
-
-    render() {
-        if (this.state.redirectId !== null) {
-            return (<Redirect to={`/student/${this.state.redirectId}`}/>)
-        }
-        return (
+const NewStudentContainer = ({ addStudent }) =>
+    <GenericCreationContainer
+        addObject={addStudent}
+        objectType="student"
+        ViewComponent={({handleSubmit}) =>
             <NewStudentView
-                handleChange={this.handleChange}
-                handleSubmit={this.handleSubmit}
-            />
-        );
-    }
-}
+                handleSubmit={handleSubmit}
+                campusId={new URLSearchParams(document.location.search).get("campusId")}/>}
+    />
+;
 
-const mapDispatchToProps = (dispatch) => {
-    return ({
-        addStudent: (student) => dispatch(addStudentThunk(student)),
-    })
-}
+const mapDispatchToProps = dispatch => ({
+    addStudent: student => dispatch(addStudentThunk(student)),
+});
+
 
 export default connect(null, mapDispatchToProps)(NewStudentContainer);

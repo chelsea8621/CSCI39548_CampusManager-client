@@ -1,25 +1,23 @@
-import NavigableContainer from "../containers/NavigableContainer";
-import {useStyles} from "../Styles";
+import GenericSingularView from "./GenericSingularView";
+import {CampusCard} from "../cards/CampusCard";
+import AllStudentsView from "./AllStudentsView";
+import CampusForm from "../forms/CampusForm";
 
-const CampusView = (props) => {
-    const {campus} = props;
-    const classes = useStyles();
-    return (
-        <NavigableContainer classes={classes}>
-            <h1>{campus.name}</h1>
-            <p>{campus.address}</p>
-            <p>{campus.description}</p>
-            <ul>
-                {campus.students.map(student => {
-                    let name = student.firstname + " " + student.lastname;
-                    return (
-                        <li key={student.id}>{name}</li>
-                    );
-                })}
-            </ul>
-        </NavigableContainer>
-    );
-
-};
+const CampusView = ({ campus, deleteStudent, ...props }) =>
+    <GenericSingularView
+        TopCardComponent={
+            ({classes}) =>
+                <CampusCard classes={classes} object={campus} cardHeight="auto"/>
+        }
+        BottomCardComponent={
+            () =>
+                <AllStudentsView students={campus.students} deleteStudent={deleteStudent}/>
+                // <StudentCard classes={classes} object={student} cardHeight="auto" notClickable/>
+        }
+        FormComponent={
+            () => <CampusForm campus={campus} {...props}/>
+        }
+    />
+;
 
 export default CampusView;

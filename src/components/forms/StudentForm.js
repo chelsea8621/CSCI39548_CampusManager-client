@@ -1,103 +1,85 @@
-import {
-    Button,
-    Card,
-    CardActions,
-    CardContent,
-    InputAdornment,
-    TextField,
-    Typography
-} from "@mui/material";
-import {memo} from "react";
+import { InputAdornment } from "@mui/material";
 import {AccountCircle} from "@mui/icons-material";
-
-const ValidatableField = ({disabled, onChange, ...props}) => {
-    return <TextField
-        variant={!!onChange ? "outlined" : "filled"}
-        disabled={disabled || !onChange}
-        onChange={onChange} {...props}/>;
-}
-
-const StudentForm = memo((
-    {
-        handleChange,
-        handleSubmit,
-        student,
-        disableCampus,
-        cancelForm,
-        ...props
-    }) => {
-    const CampusField = () =>
-        <ValidatableField
-            label="Campus ID" name="campusId" defaultValue={student?.campusId} onChange={handleChange}
-            type="number" inputProps={{min: 0, step: 1}} disabled={disableCampus} required={!disableCampus} fullWidth/>;
-    const FirstNameField = () =>
-        <ValidatableField
-            label="First Name" name="firstname"
-            defaultValue={student?.firstname}
-            onChange={handleChange}
-            InputProps={{startAdornment}}
-            required fullWidth/>;
-    const LastNameField = () =>
-        <ValidatableField
-            label="Last Name" name="lastname"
-            defaultValue={student?.lastname}
-            onChange={handleChange}
-            InputProps={{startAdornment}}
-            required fullWidth/>;
-    const EmailField = () =>
-        <ValidatableField
-            label="Email" name="email"
-            defaultValue={student?.email}
-            onChange={handleChange}
-            type="email" required fullWidth/>;
-    const ImageUrlField = () =>
-        <ValidatableField
-            label="Image (URL)" name="imageUrl"
-            defaultValue={student?.imageUrl}
-            onChange={handleChange}
-            fullWidth/>;
-    const GPAField = () =>
-        <ValidatableField
-            label="GPA" name="gpa"
-            defaultValue={student?.gpa}
-            onChange={handleChange}
-            type="number" inputProps={{min: 0, step: 0.1, max: 4}} fullWidth/>;
+import GenericForm, {GenericFields} from "./GenericForm";
+import {memo} from "react";
 
 
-    const startAdornment = (
-        <InputAdornment position="start">
-            <AccountCircle/>
-        </InputAdornment>
-    );
+const STUDENT_ATTRIBUTES = [
+    "firstname",
+    "lastname",
+    "email",
+    "imageUrl",
+    "gpa",
+    "campusId"
+];
 
-    const formTitle = student ? `${student.firstname} ${student.lastname}` : "New Student";
+const PROFILE_ADORNMENT =
+    <InputAdornment position="start">
+        <AccountCircle/>
+    </InputAdornment>
+;
 
-    return (
-        <Card component="form" autoComplete="off" onSubmit={handleSubmit} {...props}>
-            <CardContent sx={{display: "flex", flexWrap: "wrap", justifyContent: "center", gridGap: "1em"}}>
-                <Button color="primary" disabled>
-                    <Typography style={{
-                        fontWeight: 'bold',
-                        fontFamily: 'Arial, sans-serif',
-                        fontSize: '20px',
-                        color: '#11153e'
-                    }}>
-                        {formTitle}
-                    </Typography>
-                </Button>
-                <FirstNameField/>
-                <LastNameField/>
-                <EmailField/>
-                <ImageUrlField/>
-                <GPAField/>
-                <CampusField/>
-            </CardContent>
-            <CardActions sx={{display: "flex", flexWrap: "wrap", justifyContent: "space-around"}}>
-                { cancelForm ? <Button type="button" onClick={cancelForm}>Cancel</Button> : null }
-                <Button type="submit">{handleChange ? "Submit" : "Edit"}</Button>
-            </CardActions>
-        </Card>
-    );
-});
+
+const STUDENT_PROPS = {
+    firstname: {
+        label: "First Name",
+        InputProps: {
+            startAdornment: PROFILE_ADORNMENT
+        },
+        required: true
+    },
+    lastname: {
+        label: "Last Name",
+        InputProps: {
+            startAdornment: PROFILE_ADORNMENT
+        },
+        required: true
+    },
+    email: {
+        label: "Email",
+        type: "email",
+        required: true,
+    },
+    imageUrl: {
+        label: "Image (URL)",
+        // type: "url",
+    },
+    gpa: {
+        label: "GPA",
+        type: "number",
+        inputProps: {
+            min: 0,
+            step: 0.1,
+            max: 4,
+        }
+    },
+    campusId: {
+        label: "Campus ID",
+        type: "number",
+        inputProps: {
+            min: 0,
+            step: 1,
+        },
+        required: true,
+    },
+};
+
+const StudentFields = ({disableCampus, ...props}) =>
+    <GenericFields
+        attributes={STUDENT_ATTRIBUTES}
+        fieldProps={STUDENT_PROPS}
+        disableFn={disableCampus ? attribute => attribute === "campusId" : () => {}}
+        {...props}
+    />
+;
+
+const StudentForm = memo(({ student, disableCampus, ...props }) =>
+    <GenericForm
+        formTitle={student?.firstname || student?.lastname ? `${student.firstname} ${student.lastname}` : "New Student"}
+        {...props}
+    >
+        <StudentFields object={student} frozen={props.deleteObject && !props.cancelForm} disableCampus={disableCampus}/>
+    </GenericForm>
+);
 
 export default StudentForm;

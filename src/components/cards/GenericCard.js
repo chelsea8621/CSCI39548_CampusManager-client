@@ -29,19 +29,19 @@ export const GenericCard = ({
 
     return (
         <Card raised {...props}>
-            <ClickableCardRegion className={classes.links} to={!notClickable && `/${objectType}/${object.id}`}>
-                <CardMedia
-                    component="img"
-                    height={cardHeight}
-                    image={object.imageUrl}
-                    alt={headerTitle}
-                    sx={{maxHeight: "65vh"}}
-                />
+            <ClickableCardRegion className={classes.links} to={object?.id !== null && !notClickable && `/${objectType}/${object?.id}`}>
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
                         {headerTitle}
                     </Typography>
                 </CardContent>
+                <CardMedia
+                    component="img"
+                    height={cardHeight}
+                    image={object?.imageUrl}
+                    alt={headerTitle}
+                    sx={{maxHeight: "65vh"}}
+                />
             </ClickableCardRegion>
             <Actions/>
         </Card>
