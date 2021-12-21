@@ -1,43 +1,34 @@
-import { Component } from "react";
+import {useEffect} from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { fetchAllCampusesThunk } from "../../store/thunks";
-import { AllCampusesView } from "../views";
+import {connect} from "react-redux";
+import {deleteCampusThunk, fetchAllCampusesThunk} from "../../store/thunks";
+import {AllCampusesView} from "../views";
 
-class AllCampusesContainer extends Component {
-  componentDidMount() {
-    console.log(this.props);
-    this.props.fetchAllCampuses();
-  }
-
-  render() {
+const AllCampusesContainer = ({ fetchAllCampuses, allCampuses, deleteCampus }) => {
+    useEffect(fetchAllCampuses, [fetchAllCampuses]);
     return (
-      <AllCampusesView
-        allCampuses={this.props.allCampuses}
-      />
+        <AllCampusesView
+            campuses={allCampuses}
+            deleteCampus={deleteCampus}
+        />
     );
-  }
-}
+};
 
 // Map state to props;
-const mapState = (state) => {
-  return {
+const mapState = state => ({
     allCampuses: state.allCampuses,
-  };
-};
+});
 
 // Map dispatch to props;
-const mapDispatch = (dispatch) => {
-  return {
+const mapDispatch = dispatch => ({
     fetchAllCampuses: () => dispatch(fetchAllCampusesThunk()),
-  };
-};
+    deleteCampus: campusId => dispatch(deleteCampusThunk(campusId))
+});
 
 // Type check props;
 AllCampusesContainer.propTypes = {
-  allCampuses: PropTypes.array.isRequired,
-  fetchAllCampuses: PropTypes.func.isRequired,
+    allCampuses: PropTypes.array.isRequired,
+    fetchAllCampuses: PropTypes.func.isRequired,
 };
 
-// Export our store-connected container by default;
 export default connect(mapState, mapDispatch)(AllCampusesContainer);

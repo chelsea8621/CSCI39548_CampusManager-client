@@ -1,70 +1,54 @@
-import { Component } from 'react';
-import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import {Component} from 'react';
+import {connect} from 'react-redux';
+import {Redirect} from 'react-router-dom';
 
 import NewStudentView from '../views/NewStudentView';
-import { addStudentThunk } from '../../store/thunks';
+import {addStudentThunk} from '../../store/thunks';
 
 
 class NewStudentContainer extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
-          firstname: "", 
-          lastname: "", 
-          campusId: null, 
-          redirect: false, 
-          redirectId: null
+            redirectId: null
         };
     }
 
-    handleChange = event => {
-      this.setState({
+    handleChange = event => this.setState({
         [event.target.name]: event.target.value
-      });
-    }
+    });
 
     handleSubmit = async event => {
         event.preventDefault();
 
-        let student = {
-            firstname: this.state.firstname,
-            lastname: this.state.lastname,
-            campusId: this.state.campusId
-        };
-        
-        let newStudent = await this.props.addStudent(student);
+        const { redirectId: oldRedirectId, ...student } = this.state;
 
-        this.setState({
-          firstname: "", 
-          lastname: "", 
-          campusId: null, 
-          redirect: true, 
-          redirectId: newStudent.id
-        });
+        const { id: redirectId } = await this.props.addStudent(student);
+
+        this.setState({ redirectId });
     }
 
     componentWillUnmount() {
-        this.setState({redirect: false, redirectId: null});
+        this.setState({  redirectId: null });
     }
 
     render() {
-        if(this.state.redirect) {
-          return (<Redirect to={`/student/${this.state.redirectId}`}/>)
+        if (this.state.redirectId !== null) {
+            return (<Redirect to={`/student/${this.state.redirectId}`}/>)
         }
         return (
-          <NewStudentView 
-            handleChange = {this.handleChange} 
-            handleSubmit={this.handleSubmit}      
-          />
+            <NewStudentView
+                handleChange={this.handleChange}
+                handleSubmit={this.handleSubmit}
+            />
         );
     }
 }
 
-const mapDispatch = (dispatch) => {
-    return({
+const mapDispatchToProps = (dispatch) => {
+    return ({
         addStudent: (student) => dispatch(addStudentThunk(student)),
     })
 }
 
-export default connect(null, mapDispatch)(NewStudentContainer);
+export default connect(null, mapDispatchToProps)(NewStudentContainer);

@@ -6,7 +6,6 @@ import { CampusView } from "../views";
 
 class CampusContainer extends Component {
   componentDidMount() {
-    //getting campus ID from url
     this.props.fetchCampus(this.props.match.params.id);
   }
 

@@ -1,38 +1,71 @@
-import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import {useStyles} from "../Styles";
+import NavigableContainer from "../containers/NavigableContainer";
+import useWindowDimensions from "../../utils/WindowDimensions";
+import {StudentCard} from "../cards/StudentCard";
+import {Button, Card, CardActions} from '@mui/material';
+import {Link} from "react-router-dom";
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
-const AllStudentsView = (props) => {
-  const {students, deleteStudent} = props;
+const CARD_HEIGHT = 140;
+const CARD_WIDTH = 1.8125 * CARD_HEIGHT;
 
-  if (!students.length) {
+const NewStudent = () => {
     return (
-    <div>
-      <p>There are no students.</p>
-      <Link to={`newstudent`}>
-        <button>Add New Student</button>
-      </Link>
-    </div>
+        <Card raised>
+            <CardActions>
+                <Link to={`newstudent`}>
+                    <Button aria-label="Add New Student" startIcon={<AddCircleIcon/>}>
+                        Add New Student
+                    </Button>
+                </Link>
+            </CardActions>
+        </Card>
     );
-  }
-  
-  return (
-    <div>
-      {students.map((student) => {
-        let name = student.firstname + " " + student.lastname;
+}
+
+const AllStudentsView = ({ students, deleteStudent }) => {
+    const classes = useStyles();
+    const { width: pageWidth } = useWindowDimensions();
+    const numColumns = Math.round(Math.max(pageWidth / CARD_WIDTH, 1));
+
+    if (!students.length) {
         return (
-          <div key={student.id}>
-          <Link to={`/student/${student.id}`}>
-            <h1>{name}</h1>
-          </Link>
-          <button onClick={() => deleteStudent(student.id)}>Delete</button>
-          </div>
+            <NavigableContainer classes={classes}>
+                <p>There are no students.</p>
+                <div style={{
+                    display: "inline-grid",
+                    gridTemplateColumns: `repeat(${numColumns}, 1fr)`,
+                    gridGap: "10px",
+                }}>
+                    <NewStudent/>
+                </div>
+            </NavigableContainer>
         );
-      }
-      )}
-      <Link to={`/newstudent`}>
-        <button>Add New Student</button>
-      </Link>
-    </div>
-  );
+    }
+
+    return (
+        <NavigableContainer classes={classes}>
+            <div style={{
+                display: "inline-grid",
+                gridTemplateColumns: `repeat(${numColumns}, 1fr)`,
+                gridGap: "10px",
+            }}>
+                <NewStudent classes={classes}/>
+                {students.map(student => <StudentCard
+                    key={student.id}
+                    classes={classes}
+                    deleteFn={deleteStudent}
+                    cardHeight={CARD_HEIGHT}
+                    object={student}/>)}
+            </div>
+        </NavigableContainer>
+    );
+};
+
+AllStudentsView.propTypes = {
+    students: PropTypes.array.isRequired,
+    deleteStudent: PropTypes.func.isRequired,
 };
 
 
